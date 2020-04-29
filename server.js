@@ -10,9 +10,7 @@ app.listen(config.get('port'), function () {
     log.info('Express server listening on port ' + config.get('port'));
 });
 
-
 app.use(bodyParser.json());
-
 
 app.get('/api/articles', function (req, res) {
     return ArticleModel.find(function (err, articles) {
