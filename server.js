@@ -1,17 +1,18 @@
 var express = require('express');
 var app = express();
+var bodyParser = require('body-parser')
 var config = require('./libs/config');
 var log = require('./libs/log')(module);
 var ArticleModel = require('./libs/mongoose').ArticleModel;
+const url = require('url');
 
 app.listen(config.get('port'), function () {
     log.info('Express server listening on port ' + config.get('port'));
 });
 
-app.configure(function () {
-    app.use(express.bodyParser());
-    app.use(app.router);
-});
+
+app.use(bodyParser.json());
+
 
 app.get('/api/articles', function (req, res) {
     return ArticleModel.find(function (err, articles) {
@@ -26,11 +27,13 @@ app.get('/api/articles', function (req, res) {
 });
 
 app.post('/api/articles', function (req, res) {
+
+    var body = url.parse(req.url,true).query;
     var article = new ArticleModel({
-        title: req.body.title,
-        author: req.body.author,
-        description: req.body.description,
-        images: req.body.images
+        title: body.title,
+        author: body.author,
+        description: body.description,
+        images: body.images
     });
     article.save(function (err) {
         if (!err) {
